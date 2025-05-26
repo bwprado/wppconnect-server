@@ -1,12 +1,12 @@
 import { ServerOptions } from './types/ServerOptions';
 
 export default {
-  secretKey: 'THISISMYSECURETOKEN',
+  secretKey: '06c3af5808711f304f25d37457b6b786ef6216e49eb3f98bbaa5b24fed380ac1',
   host: 'http://localhost',
   port: '21465',
-  deviceName: 'WppConnect',
-  poweredBy: 'WPPConnect-Server',
-  startAllSession: true,
+  deviceName: 'CEMARC',
+  poweredBy: 'Work In Progress - Dev',
+  startAllSession: false,
   tokenStoreType: 'file',
   maxListeners: 15,
   customUserDataDir: './userDataDir/',

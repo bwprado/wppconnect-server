@@ -13,7 +13,7 @@
     "changelog:preview": "conventional-changelog -p angular -u",
     "changelog:update": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "commit": "git-cz",
-    "dev": "tsx watch src/server.ts",
+    "dev": "console-ninja tsx watch src/server.ts",
     "docs": "tsx src/swagger.ts",
     "license:add": "license-check-and-add add",
     "license:check": "license-check-and-add check",
@@ -28,7 +28,7 @@
     "test": "jest"
   },
   "engines": {
-    "node": "22.15.0"
+    "node": "22.16.0"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.802.0",
@@ -115,5 +115,6 @@
     "crypto-js": "^4.2.0",
     "mongoose": "^8.14.1",
     "redis": "^4.7.0"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

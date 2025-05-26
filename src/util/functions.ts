@@ -120,6 +120,8 @@ export async function callWebHook(
   event: any,
   data: any
 ) {
+  console.log(client.config);
+  console.log(req.serverOptions);
   const webhook =
     client?.config.webhook || req.serverOptions.webhook.url || false;
   if (webhook) {
@@ -137,21 +139,20 @@ export async function callWebHook(
         data.from ||
         data.chatId ||
         (data.chatId ? data.chatId._serialized : null);
+
       data = Object.assign({ event: event, session: client.session }, data);
+
       if (req.serverOptions.mapper.enable)
         data = await convert(req.serverOptions.mapper.prefix, data);
-      api
-        .post(webhook, data)
-        .then(() => {
-          try {
-            const events = ['unreadmessages', 'onmessage'];
-            if (events.includes(event) && req.serverOptions.webhook.readMessage)
-              client.sendSeen(chatId);
-          } catch (e) {}
-        })
-        .catch((e) => {
-          req.logger.warn('Error calling Webhook.', e);
-        });
+      await api.post(webhook, data);
+
+      try {
+        const events = ['unreadmessages', 'onmessage'];
+        if (events.includes(event) && req.serverOptions.webhook.readMessage)
+          client.sendSeen(chatId);
+      } catch (e) {
+        req.logger.warn('Error calling Webhook.', e);
+      }
     } catch (e) {
       req.logger.error(e);
     }
