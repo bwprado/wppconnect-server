@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import { defaultLogger } from '@wppconnect-team/wppconnect';
 import cors from 'cors';
 import express, { Express, NextFunction, Router } from 'express';
 import boolParser from 'express-query-boolean';
-import { createServer } from 'http';
 import mergeDeep from 'merge-deep';
 import process from 'process';
+import config from './config';
+import routes from './routes';
+
+import { defaultLogger } from '@wppconnect-team/wppconnect';
+import { createServer } from 'http';
 import { Server as Socket } from 'socket.io';
 import { Logger } from 'winston';
-
 import { version } from '../package.json';
-import config from './config';
 import { convert } from './mapper/index';
-import routes from './routes';
 import { ServerOptions } from './types/ServerOptions';
 import {
   createFolders,
