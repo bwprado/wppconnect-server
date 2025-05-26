@@ -27,9 +27,6 @@
     "swagger:generate": "yarn swagger:copy-assets && yarn swagger:copy-json && yarn swagger:fix-url",
     "test": "jest"
   },
-  "engines": {
-    "node": "22.16.0"
-  },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.802.0",
     "@wppconnect-team/wppconnect": "^1.37.1",
