@@ -241,21 +241,10 @@ export async function closeSession(req: Request, res: Response): Promise<any> {
    */
   const session = req.session;
   try {
-    if (clientsArray[session] === undefined) {
-      return res
-        .status(200)
-        .json({ status: false, message: `No session found for: ${session}` });
-    }
-
-    if ((clientsArray as any)[session].status === null) {
-      return res
-        .status(200)
-        .json({ status: true, message: 'Session successfully closed' });
-    } else {
-      (clientsArray as any)[session] = { status: null };
-
-      await req.client.close();
-      req.io.emit('whatsapp-status', false);
+    if (
+      (clientsArray as any)[session].status === null ||
+      clientsArray[session] === undefined
+    ) {
       callWebHook(
         { ...(req?.client || {}), config: req?.body },
         req,
@@ -270,6 +259,25 @@ export async function closeSession(req: Request, res: Response): Promise<any> {
         .status(200)
         .json({ status: true, message: 'Session successfully closed' });
     }
+    (clientsArray as any)[session] = { status: null };
+
+    await req.client.close();
+
+    req.io.emit('whatsapp-status', false);
+
+    callWebHook(
+      { ...(req?.client || {}), config: req?.body },
+      req,
+      'closesession',
+      {
+        message: `Session: ${session} disconnected`,
+        connected: false,
+      }
+    );
+
+    return res
+      .status(200)
+      .json({ status: true, message: 'Session successfully closed' });
   } catch (error) {
     req.logger.error(error);
     return res
