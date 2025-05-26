@@ -120,8 +120,6 @@ export async function callWebHook(
   event: any,
   data: any
 ) {
-  console.log(client.config);
-  console.log(req.serverOptions);
   const webhook =
     client?.config.webhook || req.serverOptions.webhook.url || false;
   if (webhook) {
@@ -144,6 +142,7 @@ export async function callWebHook(
 
       if (req.serverOptions.mapper.enable)
         data = await convert(req.serverOptions.mapper.prefix, data);
+
       await api.post(webhook, data);
 
       try {
