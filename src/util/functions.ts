@@ -138,7 +138,11 @@ export async function callWebHook(
         data.chatId ||
         (data.chatId ? data.chatId._serialized : null);
 
-      data = Object.assign({ event: event, session: client.session }, data);
+      data = {
+        ...data,
+        event: event,
+        session: client.session || req.session,
+      };
 
       if (req.serverOptions.mapper.enable)
         data = await convert(req.serverOptions.mapper.prefix, data);
