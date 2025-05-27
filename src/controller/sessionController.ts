@@ -26,6 +26,7 @@ import CreateSessionUtil from '../util/createSessionUtil';
 import { callWebHook, contactToArray } from '../util/functions';
 import getAllTokens from '../util/getAllTokens';
 import { clientsArray, deleteSessionOnArray } from '../util/sessionUtil';
+import { ClientSessionStatus } from '../types/ClientSession';
 
 const SessionUtil = new CreateSessionUtil();
 
@@ -242,6 +243,7 @@ export async function closeSession(req: Request, res: Response): Promise<any> {
   const session = req.session;
   try {
     if (
+      !req.client ||
       clientsArray[session] === undefined ||
       clientsArray?.[session]?.status === null
     ) {
@@ -262,6 +264,7 @@ export async function closeSession(req: Request, res: Response): Promise<any> {
       'closesession',
       {
         message: `Session: ${session} disconnected`,
+        session: session,
         connected: false,
       }
     );
@@ -318,6 +321,7 @@ export async function logOutSession(req: Request, res: Response): Promise<any> {
 
       req.io.emit('whatsapp-status', false);
       callWebHook(req.client, req, 'logoutsession', {
+        session: session,
         message: `Session: ${session} logged out`,
         connected: false,
       });
@@ -355,9 +359,15 @@ export async function checkConnectionSession(
   try {
     await req.client.isConnected();
 
-    res.status(200).json({ status: true, message: 'Connected' });
+    res.status(200).json({
+      status: ClientSessionStatus.CONNECTED,
+      session: req?.session || null,
+    });
   } catch (error) {
-    res.status(200).json({ status: false, message: 'Disconnected' });
+    res.status(200).json({
+      status: ClientSessionStatus.CLOSED,
+      session: req?.session || null,
+    });
   }
 }
 
