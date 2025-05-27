@@ -585,12 +585,13 @@ export async function sendListMessage(req: Request, res: Response) {
       );
     }
 
-    if (results.length === 0)
-      return returnError(req, res, 'Error sending list buttons');
+    if (results.length === 0) {
+      return res.status(400).json('Error sending list buttons');
+    }
 
-    returnSucess(res, results);
+    return res.json(results);
   } catch (error) {
-    returnError(req, res, error);
+    return res.status(400).json('Error sending list buttons');
   }
 }
 
