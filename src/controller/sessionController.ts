@@ -188,7 +188,9 @@ export async function showAllSessions(
     arr.push({ session: item });
   });
 
-  res.status(200).json({ response: await getAllTokens(req) });
+  const allTokens = await getAllTokens(req);
+
+  res.status(200).json({ response: allTokens });
 }
 
 export async function startSession(req: Request, res: Response): Promise<any> {
@@ -241,6 +243,7 @@ export async function closeSession(req: Request, res: Response): Promise<any> {
      }
    */
   const session = req.session;
+  console.log(clientsArray);
   try {
     if (
       !req.client ||
@@ -507,9 +510,14 @@ export async function getSessionState(req: Request, res: Response) {
         ? await QRCode.toDataURL(client.urlcode)
         : null;
 
-    if ((client == null || client.status == null) && !waitQrCode)
-      res.status(200).json({ status: 'CLOSED', qrcode: null });
-    else if (client != null)
+    if ((!client || !client.status) && !waitQrCode)
+      res.status(200).json({
+        status: 'CLOSED',
+        qrcode: null,
+        session: req.session,
+        event: 'session-started',
+      });
+    else if (client)
       res.status(200).json({
         status: client.status,
         qrcode: qr,
