@@ -68,11 +68,19 @@ const verifyToken = (req: Request, res: Response, next: NextFunction): any => {
       sessionDecrypt + secureToken,
       tokenDecrypt,
       function (err, result) {
+        if (err) {
+          req.logger.error(err);
+          return res.status(401).json({
+            error: 'Authentication error',
+            message: err.message || 'Token verification failed',
+          });
+        }
+
         if (result) {
           req.session = formatSession(req.params.session);
           req.token = tokenDecrypt;
           req.client = clientsArray[req.session];
-          next();
+          return next();
         } else {
           return res
             .status(401)
