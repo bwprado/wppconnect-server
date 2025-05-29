@@ -6,7 +6,7 @@ export default {
   port: '21465',
   deviceName: 'CEMARC',
   poweredBy: 'Work In Progress - Dev',
-  startAllSession: false,
+  startAllSession: true,
   tokenStoreType: 'file',
   maxListeners: 15,
   customUserDataDir: './userDataDir/',
