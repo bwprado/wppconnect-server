@@ -1,102 +1,101 @@
-import { StatusFindValues } from './ClientSession';
-
-// Base webhook structure - all webhooks include these properties
 export interface BaseWebhookData {
-  event: string;
+  event: WebhookEventType;
   session: string;
+  status: WebhookStatus;
+  chatStatus: WebhookChatStatus;
 }
 
 // Status-related webhooks
 export interface StatusFindWebhook extends BaseWebhookData {
-  event: 'status-find';
-  status: StatusFindValues;
+  event: WebhookEventType.STATUS_FIND;
 }
 
 export interface PhoneCodeWebhook extends BaseWebhookData {
-  event: 'phoneCode';
+  event: WebhookEventType.PHONE_CODE;
   phoneCode: string;
   phone: string;
 }
 
 export interface QRCodeWebhook extends BaseWebhookData {
-  event: 'qrcode';
+  event: WebhookEventType.QR_CODE;
   qrcode: string;
   urlcode: string;
 }
 
 // Session lifecycle webhooks
 export interface CloseSessionWebhook extends BaseWebhookData {
-  event: 'closesession';
+  event: WebhookEventType.CLOSE_SESSION;
   message: string;
-  connected: boolean;
 }
 
 export interface LogoutSessionWebhook extends BaseWebhookData {
-  event: 'logoutsession';
+  event: WebhookEventType.LOGOUT_SESSION;
   message: string;
-  connected: boolean;
 }
 
 // Message-related webhooks
 export interface MessageWebhook extends BaseWebhookData {
-  event: 'onmessage' | 'onselfmessage' | 'unreadmessages';
+  event:
+    | WebhookEventType.ON_MESSAGE
+    | WebhookEventType.ON_SELF_MESSAGE
+    | WebhookEventType.UNREAD_MESSAGES;
   // Message object with all WhatsApp message properties
   // The actual message structure would depend on the Message type from WPPConnect
   [key: string]: any;
 }
 
 export interface LocationWebhook extends BaseWebhookData {
-  event: 'location';
+  event: WebhookEventType.LOCATION;
   // Location data structure
   [key: string]: any;
 }
 
 export interface AckWebhook extends BaseWebhookData {
-  event: 'onack';
+  event: WebhookEventType.ON_ACK;
   // Acknowledgment data structure
   [key: string]: any;
 }
 
 // Group/Contact-related webhooks
 export interface ParticipantsChangedWebhook extends BaseWebhookData {
-  event: 'onparticipantschanged';
+  event: WebhookEventType.ON_PARTICIPANTS_CHANGED;
   // Participant change event data
   [key: string]: any;
 }
 
 export interface PresenceChangedWebhook extends BaseWebhookData {
-  event: 'onpresencechanged';
+  event: WebhookEventType.ON_PRESENCE_CHANGED;
   // Presence change event data
   [key: string]: any;
 }
 
 // Interaction webhooks
 export interface ReactionMessageWebhook extends BaseWebhookData {
-  event: 'onreactionmessage';
+  event: WebhookEventType.ON_REACTION_MESSAGE;
   // Message reaction data
   [key: string]: any;
 }
 
 export interface RevokedMessageWebhook extends BaseWebhookData {
-  event: 'onrevokedmessage';
+  event: WebhookEventType.ON_REVOKED_MESSAGE;
   // Revoked message data
   [key: string]: any;
 }
 
 export interface PollResponseWebhook extends BaseWebhookData {
-  event: 'onpollresponse';
+  event: WebhookEventType.ON_POLL_RESPONSE;
   // Poll response data
   [key: string]: any;
 }
 
 export interface IncomingCallWebhook extends BaseWebhookData {
-  event: 'incomingcall';
+  event: WebhookEventType.INCOMING_CALL;
   // Incoming call data
   [key: string]: any;
 }
 
 export interface LabelUpdatedWebhook extends BaseWebhookData {
-  event: 'onupdatelabel';
+  event: WebhookEventType.ON_UPDATE_LABEL;
   // Label update data
   [key: string]: any;
 }
@@ -138,4 +137,31 @@ export enum WebhookEventType {
   ON_POLL_RESPONSE = 'onpollresponse',
   INCOMING_CALL = 'incomingcall',
   ON_UPDATE_LABEL = 'onupdatelabel',
+}
+
+export enum WebhookStatus {
+  CONNECTED = 'CONNECTED',
+  INITIALIZING = 'INITIALIZING',
+  DISCONNECTED = 'DISCONNECTED',
+  QRCODE = 'QRCODE',
+  PHONECODE = 'PHONECODE',
+  CLOSED = 'CLOSED',
+}
+
+export enum WebhookChatStatus {
+  isLogged = 'isLogged',
+  notLogged = 'notLogged',
+  browserClose = 'browserClose',
+  qrReadSuccess = 'qrReadSuccess',
+  qrReadFail = 'qrReadFail',
+  qrReadError = 'qrReadError',
+  qrAwaitingRead = 'qrAwaitingRead',
+  autocloseCalled = 'autocloseCalled',
+  desconnectedMobile = 'desconnectedMobile',
+  phoneNotConnected = 'phoneNotConnected',
+  serverClose = 'serverClose',
+  deleteToken = 'deleteToken',
+  inChat = 'inChat',
+  available = 'available',
+  unavailable = 'unavailable',
 }
