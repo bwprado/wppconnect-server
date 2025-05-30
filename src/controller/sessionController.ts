@@ -27,6 +27,11 @@ import { callWebHook, contactToArray } from '../util/functions';
 import getAllTokens from '../util/getAllTokens';
 import { clientsArray, deleteSessionOnArray } from '../util/sessionUtil';
 import { ClientSessionStatus } from '../types/ClientSession';
+import {
+  WebhookChatStatus,
+  WebhookEventType,
+  WebhookStatus,
+} from '../types/WebhookTypes';
 
 const SessionUtil = new CreateSessionUtil();
 
@@ -264,11 +269,12 @@ export async function closeSession(req: Request, res: Response): Promise<any> {
     callWebHook(
       { ...(req?.client || {}), config: req?.body },
       req,
-      'closesession',
+      WebhookEventType.CLOSE_SESSION,
       {
         message: `Session: ${session} disconnected`,
         session: session,
-        connected: false,
+        status: WebhookStatus.DISCONNECTED,
+        chatStatus: WebhookChatStatus.desconnectedMobile,
       }
     );
 
@@ -323,19 +329,17 @@ export async function logOutSession(req: Request, res: Response): Promise<any> {
       }
 
       req.io.emit('whatsapp-status', false);
-      callWebHook(req.client, req, 'logoutsession', {
+      callWebHook(req.client, req, WebhookEventType.LOGOUT_SESSION, {
         session: session,
         message: `Session: ${session} logged out`,
-        connected: false,
+        status: WebhookStatus.DISCONNECTED,
+        chatStatus: WebhookChatStatus.desconnectedMobile,
       });
 
       return res
         .status(200)
         .json({ status: true, message: 'Session successfully closed' });
     }, 500);
-    /*try {
-      await req.client.close();
-    } catch (error) {}*/
   } catch (error) {
     req.logger.error(error);
     res
