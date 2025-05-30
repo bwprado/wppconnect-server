@@ -147,7 +147,6 @@ export async function callWebHook(
 
       if (req.serverOptions.mapper.enable)
         data = await convert(req.serverOptions.mapper.prefix, data);
-      console.log(data);
       await api.post(webhook, data);
 
       try {
