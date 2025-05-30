@@ -32,6 +32,7 @@ import config from '../config';
 import { convert } from '../mapper/index';
 import { ServerOptions } from '../types/ServerOptions';
 import { bucketAlreadyExists } from './bucketAlreadyExists';
+import { WebhookEventType } from '../types/WebhookTypes';
 
 let mime: any, crypto: any; //, aws: any;
 if (config.webhook.uploadS3) {
@@ -117,7 +118,7 @@ export function groupNameToArray(group: any) {
 export async function callWebHook(
   client: any,
   req: Request,
-  event: any,
+  event: WebhookEventType,
   data: any
 ) {
   const webhook =
@@ -146,7 +147,7 @@ export async function callWebHook(
 
       if (req.serverOptions.mapper.enable)
         data = await convert(req.serverOptions.mapper.prefix, data);
-
+      console.log(data);
       await api.post(webhook, data);
 
       try {
@@ -266,7 +267,12 @@ async function sendUnread(client: any, req: any) {
     if (chats && chats.length > 0) {
       for (let i = 0; i < chats.length; i++)
         for (let j = 0; j < chats[i].msgs.length; j++) {
-          callWebHook(client, req, 'unreadmessages', chats[i].msgs[j]);
+          callWebHook(
+            client,
+            req,
+            WebhookEventType.UNREAD_MESSAGES,
+            chats[i].msgs[j]
+          );
         }
     }
 
