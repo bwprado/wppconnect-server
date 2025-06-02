@@ -371,7 +371,7 @@ export default class CreateSessionUtil {
     client.onAck(async (ack) => {
       req.io.emit('onack', ack);
       callWebHook(client, req, WebhookEventType.ON_ACK, {
-        ...ack,
+        ack: ack,
         session: client.session,
         event: WebhookEventType.ON_ACK,
         status: WebhookStatus.CONNECTED,
