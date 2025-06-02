@@ -11,7 +11,7 @@ export default {
   maxListeners: 15,
   customUserDataDir: './userDataDir/',
   webhook: {
-    url: 'https://scintillating-elephant-636.convex.site/wppconnect-webhook',
+    url: 'https://woozy-goose-840.convex.site/wppconnect-webhook',
     autoDownload: true,
     uploadS3: false,
     readMessage: true,
