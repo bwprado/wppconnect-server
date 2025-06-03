@@ -26,7 +26,7 @@ RUN yarn build
 
 FROM base
 WORKDIR /usr/src/wpp-server/
-RUN apk add --no-cache chromium
+RUN apt-get update && apt-get install -y --no-install-recommends chromium && rm -rf /var/lib/apt/lists/*
 RUN yarn cache clean
 COPY . .
 COPY --from=build /usr/src/wpp-server/ /usr/src/wpp-server/
