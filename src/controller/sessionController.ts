@@ -519,6 +519,7 @@ export async function getSessionState(req: Request, res: Response) {
         status: 'CLOSED',
         qrcode: null,
         session: req.session,
+        chatStatus: WebhookChatStatus.desconnectedMobile,
         event: 'session-started',
       });
     else if (client)
@@ -527,11 +528,13 @@ export async function getSessionState(req: Request, res: Response) {
         qrcode: qr,
         urlcode: client.urlcode,
         version: version,
+        chatStatus: WebhookChatStatus.qrAwaitingRead,
       });
   } catch (ex) {
     req.logger.error(ex);
     res.status(500).json({
       status: 'error',
+      chatStatus: WebhookChatStatus.desconnectedMobile,
       message: 'The session is not active',
       error: ex,
     });
