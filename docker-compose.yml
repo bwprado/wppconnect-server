@@ -1,4 +1,4 @@
-version: "3"
+version: '3'
 
 services:
   wppconnect:
@@ -10,7 +10,9 @@ services:
       - ./config.ts:/usr/src/wpp-server/config.ts
       - ./wppconnect_tokens:/usr/src/wpp-server/tokens
     ports:
-      - "21465:21465"
+      - '21465:21465'
+    mem_limit: 2g
+    cpus: 1.0
 
 volumes:
-  wppconnect_tokens: {}      
+  wppconnect_tokens: {}
