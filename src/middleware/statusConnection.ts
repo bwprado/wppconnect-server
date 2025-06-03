@@ -61,7 +61,7 @@ export default async function statusConnection(
       }
       req.body.phone = localArr;
     }
-    next();
+    return next();
   } catch (error) {
     req.logger.error(error);
     return res.status(404).json({
