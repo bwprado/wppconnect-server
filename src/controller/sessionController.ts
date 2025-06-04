@@ -319,7 +319,7 @@ export async function logOutSession(req: Request, res: Response): Promise<any> {
       );
       const wppTokens = path.resolve(
         __dirname,
-        '../../../wpp',
+        '../../../wppconnect_tokens',
         `${req.session}.data.json`
       );
 
@@ -365,7 +365,7 @@ export async function logOutSession(req: Request, res: Response): Promise<any> {
           session,
           message: `Session: ${session} logged out`,
           status: WebhookStatus.DISCONNECTED,
-          chatStatus: WebhookChatStatus.desconnectedMobile,
+          chatStatus: WebhookChatStatus.loggedOut,
         }
       );
 
