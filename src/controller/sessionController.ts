@@ -19,6 +19,7 @@ import fs from 'fs';
 import mime from 'mime-types';
 import QRCode from 'qrcode';
 import { Logger } from 'winston';
+import path from 'path';
 
 import { version } from '../../package.json';
 import config from '../config';
@@ -303,7 +304,6 @@ export async function logOutSession(req: Request, res: Response): Promise<any> {
      }
    */
   try {
-    console.log(req);
     const session = req?.session;
     const webhookConfig = req.client?.config?.webhook;
     const clientSession = req.client?.session;
@@ -312,10 +312,11 @@ export async function logOutSession(req: Request, res: Response): Promise<any> {
 
     setTimeout(async () => {
       const pathUserData = config.customUserDataDir + req.session;
-      const pathTokens = __dirname + `../../../tokens/${req.session}.data.json`;
-
-      console.log('pathUserData', pathUserData);
-      console.log('pathTokens', pathTokens);
+      const pathTokens = path.resolve(
+        __dirname,
+        '../../../tokens',
+        `${req.session}.data.json`
+      );
 
       if (fs.existsSync(pathUserData)) {
         await fs.promises.rm(pathUserData, {
