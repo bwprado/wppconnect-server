@@ -164,4 +164,5 @@ export enum WebhookChatStatus {
   inChat = 'inChat',
   available = 'available',
   unavailable = 'unavailable',
+  loggedOut = 'loggedOut',
 }
