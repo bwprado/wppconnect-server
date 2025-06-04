@@ -375,7 +375,7 @@ export async function logOutSession(req: Request, res: Response): Promise<any> {
     }, 500);
   } catch (error) {
     req.logger.error(error);
-    res
+    return res
       .status(500)
       .json({ status: false, message: 'Error closing session', error });
   }
