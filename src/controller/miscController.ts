@@ -151,7 +151,7 @@ export async function clearSessionData(req: Request, res: Response) {
     const { secretkey, session } = req.params;
 
     if (secretkey !== config.secretKey) {
-      res.status(400).json({
+      return res.status(400).json({
         response: 'error',
         message: 'The token is incorrect',
       });
@@ -170,10 +170,10 @@ export async function clearSessionData(req: Request, res: Response) {
     if (fs.existsSync(pathToken)) {
       await fs.promises.rm(pathToken);
     }
-    res.status(200).json({ success: true });
+    return res.status(200).json({ success: true });
   } catch (error: any) {
     logger.error(error);
-    res.status(500).json({
+    return res.status(500).json({
       status: false,
       message: 'Error on clear session data',
       error: error,
