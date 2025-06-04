@@ -303,13 +303,19 @@ export async function logOutSession(req: Request, res: Response): Promise<any> {
      }
    */
   try {
-    const session = req.session;
+    console.log(req);
+    const session = req?.session;
+    const webhookConfig = req.client?.config?.webhook;
+    const clientSession = req.client?.session;
     await req.client?.logout?.();
     deleteSessionOnArray(req.session);
 
     setTimeout(async () => {
       const pathUserData = config.customUserDataDir + req.session;
       const pathTokens = __dirname + `../../../tokens/${req.session}.data.json`;
+
+      console.log('pathUserData', pathUserData);
+      console.log('pathTokens', pathTokens);
 
       if (fs.existsSync(pathUserData)) {
         await fs.promises.rm(pathUserData, {
@@ -329,12 +335,17 @@ export async function logOutSession(req: Request, res: Response): Promise<any> {
       }
 
       req.io.emit('whatsapp-status', false);
-      callWebHook(req.client, req, WebhookEventType.LOGOUT_SESSION, {
-        session: session,
-        message: `Session: ${session} logged out`,
-        status: WebhookStatus.DISCONNECTED,
-        chatStatus: WebhookChatStatus.desconnectedMobile,
-      });
+      callWebHook(
+        { session: clientSession, config: { webhook: webhookConfig } },
+        req,
+        WebhookEventType.LOGOUT_SESSION,
+        {
+          session,
+          message: `Session: ${session} logged out`,
+          status: WebhookStatus.DISCONNECTED,
+          chatStatus: WebhookChatStatus.desconnectedMobile,
+        }
+      );
 
       return res
         .status(200)
