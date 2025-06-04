@@ -183,7 +183,7 @@ export async function showAllSessions(
   const arr: any = [];
 
   if (tokenDecrypt !== req.serverOptions.secretKey) {
-    res.status(400).json({
+    return res.status(400).json({
       response: false,
       message: 'The token is incorrect',
     });
@@ -195,7 +195,7 @@ export async function showAllSessions(
 
   const allTokens = await getAllTokens(req);
 
-  res.status(200).json({ response: allTokens });
+  return res.status(200).json({ response: allTokens });
 }
 
 export async function startSession(req: Request, res: Response): Promise<any> {
