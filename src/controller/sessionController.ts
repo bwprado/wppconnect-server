@@ -317,6 +317,18 @@ export async function logOutSession(req: Request, res: Response): Promise<any> {
         '../../../tokens',
         `${req.session}.data.json`
       );
+      const wppTokens = path.resolve(
+        __dirname,
+        '../../../wpp',
+        `${req.session}.data.json`
+      );
+
+      console.log('pathUserData', pathUserData);
+      console.log('pathTokens', pathTokens);
+      console.log('wppTokens', wppTokens);
+      console.log('pathUserData exists', fs.existsSync(pathUserData));
+      console.log('pathTokens exists', fs.existsSync(pathTokens));
+      console.log('wppTokens exists', fs.existsSync(wppTokens));
 
       if (fs.existsSync(pathUserData)) {
         await fs.promises.rm(pathUserData, {
@@ -328,6 +340,15 @@ export async function logOutSession(req: Request, res: Response): Promise<any> {
       }
       if (fs.existsSync(pathTokens)) {
         await fs.promises.rm(pathTokens, {
+          recursive: true,
+          maxRetries: 5,
+          force: true,
+          retryDelay: 1000,
+        });
+      }
+
+      if (fs.existsSync(wppTokens)) {
+        await fs.promises.rm(wppTokens, {
           recursive: true,
           maxRetries: 5,
           force: true,
