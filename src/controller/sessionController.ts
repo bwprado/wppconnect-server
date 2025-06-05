@@ -263,7 +263,7 @@ export async function closeSession(req: Request, res: Response): Promise<any> {
 
     clientsArray[session] = { status: null };
 
-    await req.client.close();
+    await req.client?.close?.();
 
     req.io.emit('whatsapp-status', false);
 
@@ -290,6 +290,20 @@ export async function closeSession(req: Request, res: Response): Promise<any> {
   }
 }
 
+const removeFiles = async (path: string) => {
+  try {
+    if (!fs.existsSync(path)) return;
+    await fs.promises.rm(path, {
+      recursive: true,
+      maxRetries: 5,
+      force: true,
+      retryDelay: 1000,
+    });
+  } catch (error) {
+    console.error('Error removing files', error);
+  }
+};
+
 export async function logOutSession(req: Request, res: Response): Promise<any> {
   /**
    * #swagger.tags = ["Auth"]
@@ -310,69 +324,38 @@ export async function logOutSession(req: Request, res: Response): Promise<any> {
     await req.client?.logout?.();
     deleteSessionOnArray(req.session);
 
-    setTimeout(async () => {
-      const pathUserData = config.customUserDataDir + req.session;
-      const pathTokens = path.resolve(
-        __dirname,
-        '../../../tokens',
-        `${req.session}.data.json`
-      );
-      const wppTokens = path.resolve(
-        __dirname,
-        '../../../wppconnect_tokens',
-        `${req.session}.data.json`
-      );
+    const pathUserData = config.customUserDataDir + req.session;
+    const pathTokens = path.resolve(
+      __dirname,
+      '../../tokens',
+      `${req.session}.data.json`
+    );
+    const wppTokens = path.resolve(
+      __dirname,
+      '../../wppconnect_tokens',
+      `${req.session}.data.json`
+    );
 
-      console.log('pathUserData', pathUserData);
-      console.log('pathTokens', pathTokens);
-      console.log('wppTokens', wppTokens);
-      console.log('pathUserData exists', fs.existsSync(pathUserData));
-      console.log('pathTokens exists', fs.existsSync(pathTokens));
-      console.log('wppTokens exists', fs.existsSync(wppTokens));
+    await removeFiles(pathUserData);
+    await removeFiles(pathTokens);
+    await removeFiles(wppTokens);
 
-      if (fs.existsSync(pathUserData)) {
-        await fs.promises.rm(pathUserData, {
-          recursive: true,
-          maxRetries: 5,
-          force: true,
-          retryDelay: 1000,
-        });
+    req.io.emit('whatsapp-status', false);
+    callWebHook(
+      { session: clientSession, config: { webhook: webhookConfig } },
+      req,
+      WebhookEventType.LOGOUT_SESSION,
+      {
+        session,
+        message: `Session: ${session} logged out`,
+        status: WebhookStatus.DISCONNECTED,
+        chatStatus: WebhookChatStatus.loggedOut,
       }
-      if (fs.existsSync(pathTokens)) {
-        await fs.promises.rm(pathTokens, {
-          recursive: true,
-          maxRetries: 5,
-          force: true,
-          retryDelay: 1000,
-        });
-      }
+    );
 
-      if (fs.existsSync(wppTokens)) {
-        await fs.promises.rm(wppTokens, {
-          recursive: true,
-          maxRetries: 5,
-          force: true,
-          retryDelay: 1000,
-        });
-      }
-
-      req.io.emit('whatsapp-status', false);
-      callWebHook(
-        { session: clientSession, config: { webhook: webhookConfig } },
-        req,
-        WebhookEventType.LOGOUT_SESSION,
-        {
-          session,
-          message: `Session: ${session} logged out`,
-          status: WebhookStatus.DISCONNECTED,
-          chatStatus: WebhookChatStatus.loggedOut,
-        }
-      );
-
-      return res
-        .status(200)
-        .json({ status: true, message: 'Session successfully closed' });
-    }, 500);
+    return res
+      .status(200)
+      .json({ status: true, message: 'Session successfully closed' });
   } catch (error) {
     req.logger.error(error);
     return res
