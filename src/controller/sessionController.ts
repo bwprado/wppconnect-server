@@ -263,7 +263,14 @@ export async function closeSession(req: Request, res: Response): Promise<any> {
 
     clientsArray[session] = { status: null };
 
-    await req.client?.close?.();
+    if (typeof req.client?.close === 'function') {
+      await req.client.close();
+    } else {
+      console.error('req.client.close is not a function');
+      req.logger.error('req.client.close is not a function', {
+        client: req.client,
+      });
+    }
 
     req.io.emit('whatsapp-status', false);
 
@@ -293,6 +300,7 @@ export async function closeSession(req: Request, res: Response): Promise<any> {
 const removeFiles = async (path: string) => {
   try {
     if (!fs.existsSync(path)) return;
+    console.log('Removing files', path);
     await fs.promises.rm(path, {
       recursive: true,
       maxRetries: 5,
