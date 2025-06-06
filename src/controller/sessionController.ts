@@ -539,24 +539,25 @@ export async function getSessionState(req: Request, res: Response) {
         : null;
 
     if ((!client || !client.status) && !waitQrCode)
-      res.status(200).json({
-        status: 'CLOSED',
+      return res.status(200).json({
+        status: WebhookStatus.INITIALIZING,
         qrcode: null,
         session: req.session,
-        chatStatus: WebhookChatStatus.desconnectedMobile,
+        chatStatus: WebhookChatStatus.notLogged,
         event: 'session-started',
       });
     else if (client)
-      res.status(200).json({
+      return res.status(200).json({
         status: client.status,
         qrcode: qr,
         urlcode: client.urlcode,
         version: version,
+        event: 'session-started',
         chatStatus: WebhookChatStatus.qrAwaitingRead,
       });
   } catch (ex) {
     req.logger.error(ex);
-    res.status(500).json({
+    return res.status(500).json({
       status: 'error',
       chatStatus: WebhookChatStatus.desconnectedMobile,
       message: 'The session is not active',
